@@ -1,14 +1,269 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz" class="light">
 <head>
-    <link rel="stylesheet" href="style.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pokemon</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-100 -100 200 200'><path d='M-90,0 A90,90 0 0,0 90,0 Z' fill='%23f0f0f0' stroke='%23222' stroke-width='3'/><path d='M-90,0 A90,90 0 0,1 90,0 Z' fill='%23e3263a' stroke='%23222' stroke-width='3'/><circle cx='0' cy='0' r='90' fill='none' stroke='%23222' stroke-width='3'/><line x1='-90' y1='0' x2='90' y2='0' stroke='%23222' stroke-width='6'/><circle cx='0' cy='0' r='20' fill='%23222'/><circle cx='0' cy='0' r='13' fill='%23f0f0f0'/></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            pixel: ['"Press Start 2P"', 'monospace'],
+            body: ['Nunito', 'sans-serif'],
+          },
+          colors: {
+            fire:   '#FF6B35',
+            water:  '#4FC3F7',
+            grass:  '#66BB6A',
+            electric:'#FFD54F',
+            psychic:'#F48FB1',
+            ice:    '#80DEEA',
+            dragon: '#7E57C2',
+            dark2:  '#546E7A',
+            fighting:'#EF5350',
+            poison: '#AB47BC',
+            ground: '#BCAAA4',
+            flying: '#90CAF9',
+            bug:    '#D4E157',
+            rock:   '#A1887F',
+            ghost:  '#7E57C2',
+            steel:  '#B0BEC5',
+            normal: '#EEEEEE',
+            fairy:  '#F8BBD0',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Nunito', sans-serif; }
+    .pixel { font-family: 'Press Start 2P', monospace; }
+
+    html.dark body { background-color: #0f172a; color: #e2e8f0; }
+    html.light body { background-color: #f0f4ff; color: #1e293b; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .pokeball-spin { animation: spin 1s linear infinite; }
+
+    .poke-card {
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+    .poke-card:hover {
+      transform: translateY(-6px) scale(1.03);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.18);
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: -400px 0; }
+      100% { background-position: 400px 0; }
+    }
+    .skeleton {
+      background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+      background-size: 800px 100%;
+      animation: shimmer 1.4s ease-in-out infinite;
+    }
+    html.dark .skeleton {
+      background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+      background-size: 800px 100%;
+    }
+
+    #mobile-menu {
+      transition: max-height 0.3s ease, opacity 0.3s ease;
+      max-height: 0; overflow: hidden; opacity: 0;
+    }
+    #mobile-menu.open { max-height: 300px; opacity: 1; }
+
+    #modal-overlay { transition: opacity 0.2s; }
+    #modal-box { transition: transform 0.25s, opacity 0.25s; }
+
+    .type-fire     { background:#FF6B35; }
+    .type-water    { background:#4FC3F7; }
+    .type-grass    { background:#66BB6A; }
+    .type-electric { background:#FFD54F; color:#333; }
+    .type-psychic  { background:#F48FB1; }
+    .type-ice      { background:#80DEEA; color:#333; }
+    .type-dragon   { background:#7E57C2; }
+    .type-dark     { background:#546E7A; }
+    .type-fighting { background:#EF5350; }
+    .type-poison   { background:#AB47BC; }
+    .type-ground   { background:#BCAAA4; color:#333;}
+    .type-flying   { background:#90CAF9; color:#333; }
+    .type-bug      { background:#8BC34A; }
+    .type-rock     { background:#A1887F; }
+    .type-ghost    { background:#7E57C2; }
+    .type-steel    { background:#B0BEC5; color:#333; }
+    .type-normal   { background:#9E9E9E; }
+    .type-fairy    { background:#F06292; }
+
+    .stat-bar {
+      height: 8px; border-radius: 99px;
+      transition: width 0.8s cubic-bezier(.4,0,.2,1);
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 99px; }
+    html.dark ::-webkit-scrollbar-thumb { background: #334155; }
+  </style>
 </head>
-<body>
-    
-    <script src=""></script>
+<body class="min-h-screen transition-colors duration-300">
+
+<nav id="navbar" class="sticky top-0 z-50 backdrop-blur-md bg-white/80 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-700 shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="#" class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-full bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center shadow-md">
+        <i class="fa-solid fa-circle-dot text-white text-lg"></i>
+      </div>
+      <span class="pixel text-sm text-red-500 dark:text-red-400 hidden sm:block">Pokedex</span>
+    </a>
+
+    <div class="hidden md:flex items-center gap-6 text-sm font-bold">
+      <a href="#" onclick="filterType('all')" class="hover:text-red-500 transition-colors dark:text-slate-200">
+        <i class="fa-solid fa-house mr-1"></i>Bosh sahifa
+      </a>
+      <a href="#" onclick="filterType('fire')" class="hover:text-orange-500 transition-colors dark:text-slate-200">
+        <i class="fa-solid fa-fire mr-1"></i>Fire
+      </a>
+      <a href="#" onclick="filterType('water')" class="hover:text-sky-500 transition-colors dark:text-slate-200">
+        <i class="fa-solid fa-droplet mr-1"></i>Water
+      </a>
+      <a href="#" onclick="filterType('grass')" class="hover:text-green-500 transition-colors dark:text-slate-200">
+        <i class="fa-solid fa-leaf mr-1"></i>Grass
+      </a>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button onclick="toggleDark()" id="dark-btn"
+        class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all shadow-inner">
+        <i id="dark-icon" class="fa-solid fa-moon text-slate-600 dark:text-yellow-400 text-base"></i>
+      </button>
+      <button onclick="toggleMenu()" id="burger-btn"
+        class="md:hidden w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
+        <i id="burger-icon" class="fa-solid fa-bars text-slate-600 dark:text-slate-300 text-base"></i>
+      </button>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="md:hidden bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 px-4">
+    <div class="py-4 flex flex-col gap-3 text-sm font-bold">
+      <a href="#" onclick="filterType('all'); closeMenu()" class="flex items-center gap-2 py-2 px-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors dark:text-slate-200">
+        <i class="fa-solid fa-house text-slate-500 w-5"></i>Bosh sahifa
+      </a>
+      <a href="#" onclick="filterType('fire'); closeMenu()" class="flex items-center gap-2 py-2 px-3 rounded-lg hover:bg-orange-50 dark:hover:bg-slate-800 transition-colors dark:text-slate-200">
+        <i class="fa-solid fa-fire text-orange-500 w-5"></i>Fire
+      </a>
+      <a href="#" onclick="filterType('water'); closeMenu()" class="flex items-center gap-2 py-2 px-3 rounded-lg hover:bg-sky-50 dark:hover:bg-slate-800 transition-colors dark:text-slate-200">
+        <i class="fa-solid fa-droplet text-sky-500 w-5"></i>Water
+      </a>
+      <a href="#" onclick="filterType('grass'); closeMenu()" class="flex items-center gap-2 py-2 px-3 rounded-lg hover:bg-green-50 dark:hover:bg-slate-800 transition-colors dark:text-slate-200">
+        <i class="fa-solid fa-leaf text-green-500 w-5"></i>Grass
+      </a>
+      <a href="#" onclick="filterType('electric'); closeMenu()" class="flex items-center gap-2 py-2 px-3 rounded-lg hover:bg-yellow-50 dark:hover:bg-slate-800 transition-colors dark:text-slate-200">
+        <i class="fa-solid fa-bolt text-yellow-500 w-5"></i>Electric
+      </a>
+      <a href="#" onclick="filterType('psychic'); closeMenu()" class="flex items-center gap-2 py-2 px-3 rounded-lg hover:bg-pink-50 dark:hover:bg-slate-800 transition-colors dark:text-slate-200">
+        <i class="fa-solid fa-brain text-pink-500 w-5"></i>Psychic
+      </a>
+    </div>
+  </div>
+</nav>
+
+<header class="max-w-7xl mx-auto px-4 pt-10 pb-6 text-center">
+  <h1 class="pixel text-2xl md:text-4xl text-red-500 dark:text-red-400 mb-2">Pokedex</h1>
+  <p class="text-slate-500 dark:text-slate-400 font-semibold mb-6"> &bull;Pokemoni Qidiring  &bull; </p>
+
+  <div class="max-w-xl mx-auto flex gap-2 items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-2 shadow-md">
+    <i class="fa-solid fa-magnifying-glass text-slate-400 text-lg"></i>
+    <input id="search-input" type="text" placeholder="Pokémon qidirish..." oninput="onSearch(this.value)"
+      class="flex-1 bg-transparent outline-none text-base font-semibold placeholder-slate-400 dark:text-white" />
+    <button onclick="clearSearch()" id="clear-btn" class="hidden text-slate-400 hover:text-red-400 transition-colors">
+      <i class="fa-solid fa-xmark text-lg"></i>
+    </button>
+  </div>
+
+  <div class="mt-5 flex flex-wrap justify-center gap-2" id="type-pills">
+    <button onclick="filterType('all')" data-type="all"
+      class="type-pill px-4 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-white dark:bg-white dark:text-slate-900 shadow transition-all hover:scale-105">
+      <i class="fa-solid fa-layer-group mr-1"></i>Barchasi
+    </button>
+    <button onclick="filterType('fire')" data-type="fire"
+      class="type-pill px-4 py-1.5 rounded-full text-xs font-bold bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 shadow transition-all hover:scale-105">
+      <i class="fa-solid fa-fire mr-1"></i>Fire
+    </button>
+    <button onclick="filterType('water')" data-type="water"
+      class="type-pill px-4 py-1.5 rounded-full text-xs font-bold bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300 shadow transition-all hover:scale-105">
+      <i class="fa-solid fa-droplet mr-1"></i>Water
+    </button>
+    <button onclick="filterType('grass')" data-type="grass"
+      class="type-pill px-4 py-1.5 rounded-full text-xs font-bold bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300 shadow transition-all hover:scale-105">
+      <i class="fa-solid fa-leaf mr-1"></i>Grass
+    </button>
+    <button onclick="filterType('electric')" data-type="electric"
+      class="type-pill px-4 py-1.5 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300 shadow transition-all hover:scale-105">
+      <i class="fa-solid fa-bolt mr-1"></i>Electric
+    </button>
+    <button onclick="filterType('psychic')" data-type="psychic"
+      class="type-pill px-4 py-1.5 rounded-full text-xs font-bold bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300 shadow transition-all hover:scale-105">
+      <i class="fa-solid fa-brain mr-1"></i>Psychic
+    </button>
+    <button onclick="filterType('ghost')" data-type="ghost"
+      class="type-pill px-4 py-1.5 rounded-full text-xs font-bold bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 shadow transition-all hover:scale-105">
+      <i class="fa-solid fa-ghost mr-1"></i>Ghost
+    </button>
+    <button onclick="filterType('dragon')" data-type="dragon"
+      class="type-pill px-4 py-1.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300 shadow transition-all hover:scale-105">
+      <i class="fa-solid fa-dragon mr-1"></i>Dragon
+    </button>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 pb-16">
+  <div id="count-label" class="text-xs font-bold text-slate-400 dark:text-slate-500 mb-4 text-right"></div>
+
+  <div id="grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5"></div>
+
+  <div id="loading" class="flex justify-center py-16">
+    <div class="w-14 h-14 pokeball-spin">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="48" fill="none" stroke="#e2e8f0" stroke-width="4"/>
+        <path d="M2,50 A48,48 0 0,1 98,50" fill="#EF4444"/>
+        <path d="M2,50 A48,48 0 0,0 98,50" fill="white"/>
+        <line x1="2" y1="50" x2="98" y2="50" stroke="#1e293b" stroke-width="4"/>
+        <circle cx="50" cy="50" r="12" fill="white" stroke="#1e293b" stroke-width="4"/>
+        <circle cx="50" cy="50" r="6" fill="#EF4444"/>
+      </svg>
+    </div>
+  </div>
+
+  <div id="no-results" class="hidden text-center py-20">
+    <div class="text-6xl mb-4"><i class="fa-solid fa-ban"></i></div>
+    <p class="pixel text-sm text-slate-400">Topilmadi...</p>
+  </div>
+</main>
+
+<div id="modal-overlay" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+  onclick="closeModal(event)">
+  <div id="modal-box"
+    class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto relative opacity-0 scale-95 transition-all duration-300">
+    <button onclick="closeModal(null)" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors z-10">
+      <i class="fa-solid fa-xmark text-slate-600 dark:text-slate-300"></i>
+    </button>
+    <div id="modal-content" class="p-6"></div>
+  </div>
+</div>
+
+<button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})"
+  class="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-red-500 hover:bg-red-600 text-white shadow-xl flex items-center justify-center transition-all opacity-0 pointer-events-none z-40">
+  <i class="fa-solid fa-chevron-up text-base"></i>
+</button>
+
+<script src="script.js"></script>
 </body>
 </html>
