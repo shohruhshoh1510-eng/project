@@ -253,7 +253,6 @@ function buildModalContent(content, p, id, desc) {
  
   if (desc) content.appendChild(el('p', 'text-sm text-slate-500 dark:text-slate-400 text-center italic mb-4 px-2', '"' + desc + '"'))
  
-  // Bo'yi, og'irligi va tajribasini (info-grid) ko'rsatish
   const infoGrid = el('div', 'grid grid-cols-3 gap-3 mb-5')
   const infoItems = [
     { val: (p.height/10).toFixed(1) + 'm', lbl: 'Balandlik', icon: 'fa-ruler-vertical' },
@@ -268,8 +267,7 @@ function buildModalContent(content, p, id, desc) {
     cell.appendChild(sub); infoGrid.appendChild(cell)
   })
   content.appendChild(infoGrid)
- 
-  // Statistika 
+  
   const statsSection = el('div', 'mb-4')
   const statsTitle = el('h3', 'font-black text-sm text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2')
   statsTitle.appendChild(makeIcon('fa-chart-bar text-red-400')); statsTitle.appendChild(document.createTextNode('Statistikalar'))
@@ -277,8 +275,7 @@ function buildModalContent(content, p, id, desc) {
   const statsRows = el('div', 'flex flex-col gap-2.5')
   p.stats.forEach(s => statsRows.appendChild(makeStatRow(s.stat.name, s.base_stat, statClr)))
   statsSection.appendChild(statsRows); content.appendChild(statsSection)
- 
-  // Qobiliyatlar 
+
   const abSection = el('div')
   const abTitle = el('h3', 'font-black text-sm text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-2')
   abTitle.appendChild(makeIcon('fa-wand-magic-sparkles text-purple-400')); abTitle.appendChild(document.createTextNode('Qobiliyatlar'))
